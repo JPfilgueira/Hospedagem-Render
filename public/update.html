@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Atualizar</title>
+</head>
+<body>
+    <header>
+        <h1>Método CRUD</h1>
+
+        <button onclick="window.location.href='index.html'" id="voltar">Voltar</button>
+    </header>
+
+    <div class="form-container">
+        <h2>Atualizar Item</h2>
+        <form id="updateForm">
+            <label>ID:</label>
+            <input type="text" id="id" readonly><br>
+            <label>Nome:</label>
+            <input type="text" id="nomeAtualizar" required>
+            <br>
+            <label>Idade:</label>
+            <input type="text" id="idadeAtualizar" required>
+            <br>
+            <label>CPF:</label>
+            <input type="text" id="cpfAtualizar" placeholder="Digite o CPF para busca" required>
+            <br>
+            <input type="button" onclick="buscarDados()" value="Buscar" class="enviar">
+            <input type="button" onclick="atualizarDados()" value="Atualizar" class="enviar">
+        </form>
+    </div>
+    <script>
+        function buscarDados() {
+            const cpf = document.getElementById('cpfAtualizar').value;
+            fetch(`pessoas`, {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const pessoaEncontrada = data.find(pessoa => pessoa.cpf === cpf);
+                
+                if (pessoaEncontrada) {
+                    document.getElementById('nomeAtualizar').value = pessoaEncontrada.nome;
+                    document.getElementById('idadeAtualizar').value = pessoaEncontrada.idade;
+                    document.getElementById('cpfAtualizar').value = pessoaEncontrada.cpf;
+                    document.getElementById('id').value = pessoaEncontrada.id;
+                } else {
+                    alert('Pessoa não encontrada!');
+                }
+            });
+        }
+        
+        function atualizarDados() {
+            const id = document.getElementById('id').value;
+            const nome = document.getElementById('nomeAtualizar').value;
+            const idade = document.getElementById('idadeAtualizar').value;
+            const cpf = document.getElementById('cpfAtualizar').value;
+        
+            fetch(`pessoas/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nome: nome, idade: idade, cpf: cpf })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Limpa os inputs do formulário
+                document.getElementById('id').value = '';
+                document.getElementById('nomeAtualizar').value = '';
+                document.getElementById('idadeAtualizar').value = '';
+                document.getElementById('cpfAtualizar').value = '';
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Cadastrar</title>
+</head>
+<body>
+    <header>
+        <h1>Método CRUD</h1>
+
+        <button onclick="window.location.href='index.html'" id="voltar">Voltar</button>
+    </header>
+
+    <div class="form-container">
+        <h2>Cadastrar Novo Item</h2>
+        <form id="createForm">
+            <label>CPF:</label>
+            <input type="text" id="cpfCadastro" required>
+            <br>
+            <label>Nome:</label>
+            <input type="text" id="nome" required>
+            <br>
+            <label>Idade:</label>
+            <input type="text" id="idade" required>
+            <input type="button" onclick="enviarDados()" value="Enviar" class="enviar">
+        </form>
+        <h3>Dados Cadastrais - GET</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Idade</th>
+                <th>CPF</th>
+            </tr>
+            <tbody id="tabela-corpo"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function enviarDados() {
+            const nome = document.getElementById('nome').value;
+            const idade = document.getElementById('idade').value;
+            const cpf = document.getElementById('cpfCadastro').value;
+        
+            fetch('pessoas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nome: nome, idade: idade, cpf: cpf })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Limpa os inputs do formulário
+                document.getElementById('nome').value = '';
+                document.getElementById('idade').value = '';
+                document.getElementById('cpfCadastro').value = '';
+                // Atualiza a tabela
+                atualizarTabela();
+            });
+        }
+        
+        function atualizarTabela() {
+            fetch('pessoas')
+            .then(response => response.json())
+            .then(data => {
+                const tabela = document.getElementById('tabela-corpo');
+                tabela.innerHTML = ''; // Limpa a tabela antes de atualizar
+                data.forEach((objeto) => {
+                    const linha = `<tr>
+                        <td>${objeto.id}</td>
+                        <td>${objeto.nome}</td>
+                        <td>${objeto.idade}</td>
+                        <td>${objeto.cpf}</td>
+                    </tr>`;
+                    tabela.innerHTML += linha;
+                });
+            });
+        }
+        
+        // Atualiza a tabela ao carregar a página
+        window.onload = atualizarTabela;
+    </script>
+</body>
+</html>
